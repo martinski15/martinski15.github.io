@@ -3,332 +3,133 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Our Playlist – Martin &amp; Isa</title>
+  <title>Our Playlist ♥️ – Martin &amp; Isa</title>
   <link rel="stylesheet" href="css/style.css" />
   <style>
-    :root {
-      --bg: #fbfbf3;
-      --brand: #a8132b;
-      --white: #fff;
-      --dark: #333;
+    /* match your site’s look */
+    body { background:#fbfbf3; font-family:Georgia, serif; margin:0 }
+    main { max-width:800px; margin:2rem auto; padding:0 1rem; }
+    h1 { color:#a8132b; font-size:2.75rem; text-align:center; }
+    .controls { display:flex; gap:0.5rem; margin-bottom:2rem; }
+    .controls input, .controls button {
+      flex:1; padding:.75rem; border:2px solid #a8132b; border-radius:.75rem;
+      font-size:1rem;
     }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      font-family: Georgia, serif;
-      color: var(--dark);
-    }
-    /* ─── NAV ─── */
-    nav {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 1.5rem 2rem; background: var(--white);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      position: sticky; top: 0; z-index: 10;
-    }
-    nav .logo a {
-      font-size: 2.5rem;
-      color: var(--brand);
-      text-decoration: none;
-      font-weight: bold;
-    }
-    nav ul {
-      display: flex; gap: 1.5rem; list-style: none; margin: 0; padding:0;
-    }
-    nav ul li a {
-      color: var(--brand);
-      text-decoration: none;
-      font-style: italic;
-      font-size: 1.1rem;
-      transition: opacity .2s;
-    }
-    nav ul li a:hover,
-    nav ul li a.active { opacity: .6; }
-
-    /* ─── MAIN ─── */
-    main {
-      max-width: 800px;
-      margin: 2rem auto;
-      padding: 0 1rem 4rem;
-      text-align: center;
-    }
-    h1 {
-      font-size: 2.75rem;
-      color: var(--brand);
-      margin-bottom: 1.5rem;
-    }
-
-    /* ─── CONNECT / CONTROLS ─── */
-    .add-track {
-      display: grid;
-      grid-template-columns: auto auto 1fr auto;
-      gap: .5rem;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-    .add-track button,
-    .add-track select,
-    .add-track input {
-      font-size: 1rem;
-      padding: .75rem 1rem;
-      border: 2px solid var(--brand);
-      border-radius: .75rem;
-      outline: none;
-    }
-    .add-track button {
-      background: var(--brand);
-      color: var(--white);
-      border: none;
-      cursor: pointer;
-      transition: background .2s;
-    }
-    .add-track button:hover { background: #900f28; }
-    .add-track select {
-      background: var(--brand);
-      color: var(--white);
-      cursor: pointer;
-    }
-    .add-track select:disabled,
-    .add-track input:disabled,
-    .add-track button:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-    }
-
-    /* ─── PLAYLIST GRID ─── */
-    .playlist {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-    .track {
-      background: var(--white);
-      padding: 1rem;
-      border-radius: .75rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      position: relative;
-    }
-    .track iframe {
-      width: 100%;
-      height: 80px;
-      border: none;
-      border-radius: .5rem;
-    }
+    .controls button { background:#a8132b; color:white; cursor:pointer; }
+    .playlist { display:grid; gap:1.5rem; }
+    .track { position:relative; background:white; padding:1rem; border-radius:.75rem;
+             box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+    .track iframe { width:100%; height:80px; border:none; border-radius:.5rem; }
     .track .remove {
-      position: absolute;
-      top: .5rem; right: .5rem;
-      background: transparent; border: none;
-      font-size: 1.25rem; color: #888; cursor: pointer;
-      transition: color .2s;
+      position:absolute; top:.5rem; right:.5rem; background:transparent;
+      border:none; font-size:1.25rem; color:#888; cursor:pointer;
     }
-    .track .remove:hover { color: #a00; }
-
-    @media (min-width: 600px) {
-      .playlist { grid-template-columns: 1fr 1fr; }
-      .track iframe { height: 100px; }
-    }
+    .track .remove:hover { color:#a00 }
   </style>
 </head>
 <body>
 
   <nav>
-    <div class="logo"><a href="index.html">Martin &amp; Isa ♥️</a></div>
+    <div class="logo">
+      <a href="index.html">Martin &amp; Isa ♥️</a>
+    </div>
     <ul>
       <li><a href="our-story.html">Our Story</a></li>
       <li><a href="playlist.html" class="active">Our Playlist</a></li>
       <li><a href="500-things.html">500 Things</a></li>
       <li><a href="bucket-list.html">Bucket List</a></li>
-      <li><a href="surprise.html" class="surprise">Surprise ❤️</a></li>
+      <li>
+        <a href="https://martinski15.github.io/2048-personalized/"
+           target="_blank" rel="noopener">2048</a>
+      </li>
+      <li><a href="surprise.html" class="surprise">Surprise 🤍</a></li>
     </ul>
   </nav>
 
   <main>
-    <h1>Our Spotify Playlist</h1>
-
-    <div class="add-track">
-      <button id="connect-btn">Connect Spotify</button>
-      <select id="playlist-select" disabled>
-        <option>— select playlist —</option>
-      </select>
-      <input id="track-url" type="text" placeholder="Paste Spotify track URL…" disabled/>
-      <button id="add-btn" disabled>Add to Playlist</button>
+    <h1>Our Playlist ♥️</h1>
+    <div class="controls">
+      <input id="track-url" placeholder="Paste Spotify URL…" />
+      <button id="add-btn">Add Track</button>
     </div>
-
     <div id="playlist" class="playlist"></div>
   </main>
 
   <script>
-  (function(){
-    // ─── CONFIG ───
-    const clientId    = '59ae810bcb5b4a4d9f1d190eafa40a75';
-    const redirectUri = 'https://tinskisa.com/playlist.html';
-    const scopes      = [
-      'playlist-modify-public',
-      'playlist-modify-private',
-      'user-read-email'
-    ].join('%20');
+  (() => {
+    const STORAGE_KEY = 'localPlaylist';
+    let playlist = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 
-    // ─── ELEMENTS ───
-    const btnConnect  = document.getElementById('connect-btn');
-    const selPlaylist = document.getElementById('playlist-select');
-    const inpTrack    = document.getElementById('track-url');
-    const btnAdd      = document.getElementById('add-btn');
-    const container   = document.getElementById('playlist');
+    // Elements
+    const inp    = document.getElementById('track-url');
+    const btn    = document.getElementById('add-btn');
+    const cont   = document.getElementById('playlist');
 
-    // ─── AUTH HELPERS ───
-    function parseHash() {
-      return window.location.hash.substring(1)
-        .split('&')
-        .reduce((acc, kv) => {
-          const [k,v] = kv.split('=');
-          acc[k] = decodeURIComponent(v);
-          return acc;
-        }, {});
-    }
-    function authorize() {
-      const url = 'https://accounts.spotify.com/authorize'
-        + '?response_type=token'
-        + '&client_id=' + clientId
-        + '&scope=' + scopes
-        + '&redirect_uri=' + encodeURIComponent(redirectUri)
-        + '&show_dialog=true';
-      window.location = url;
-    }
-
-    // ─── STATE ───
-    let token = sessionStorage.getItem('spotify_token') || null;
-
-    // ─── HANDLE REDIRECT ───
-    if (!token && window.location.hash) {
-      const h = parseHash();
-      if (h.access_token) {
-        token = h.access_token;
-        sessionStorage.setItem('spotify_token', token);
-        window.location.hash = '';
-      }
-    }
-
-    // ─── INIT ───
-    if (token) {
-      afterAuth();
-    } else {
-      btnConnect.disabled = false;
-      btnConnect.onclick  = authorize;
-    }
-
-    function afterAuth() {
-      btnConnect.textContent = 'Connected ✓';
-      btnConnect.disabled   = true;
-      selPlaylist.disabled  = false;
-      inpTrack.disabled     = false;
-      btnAdd.disabled       = false;
-
-      fetchPlaylists();
-      selPlaylist.addEventListener('change', renderPlaylist);
-      btnAdd   .addEventListener('click', addTrack);
-    }
-
-    // ─── FETCH USER PLAYLISTS ───
-    function fetchPlaylists() {
-      fetch('https://api.spotify.com/v1/me/playlists?limit=50', {
-        headers: { 'Authorization': 'Bearer ' + token }
-      })
-      .then(r => r.json())
-      .then(data => {
-        selPlaylist.innerHTML = '<option>— select playlist —</option>';
-        data.items.forEach(pl => {
-          const opt = new Option(pl.name, pl.id);
-          selPlaylist.add(opt);
-        });
-      });
-    }
-
-    // ─── PARSE TRACK URL ───
-    function parseSpotifyTrackUrl(url) {
+    // Helpers: extract Spotify or YouTube embed URLs
+    function makeEmbedSrc(url) {
       try {
-        const u = new URL(url.trim());
-        const parts = u.pathname.split('/');
-        if (parts[1] === 'track') return 'spotify:track:' + parts[2];
-      } catch(_) {}
+        const u = new URL(url);
+        // Spotify track: https://open.spotify.com/track/{id}
+        if (u.host.includes('spotify.com') && u.pathname.startsWith('/track/')) {
+          const id = u.pathname.split('/')[2];
+          return 'https://open.spotify.com/embed/track/' + id;
+        }
+        // YouTube: youtu.be/{id} or youtube.com/watch?v={id}
+        if (u.host.includes('youtu.be') || u.host.includes('youtube.com')) {
+          let id = u.host.includes('youtu.be')
+                   ? u.pathname.slice(1)
+                   : new URLSearchParams(u.search).get('v');
+          return 'https://www.youtube.com/embed/' + id;
+        }
+      } catch(e){}
       return null;
     }
 
-    // ─── ADD TRACK to SPOTIFY ───
-    function addTrack() {
-      const uri = parseSpotifyTrackUrl(inpTrack.value);
-      const pid = selPlaylist.value;
-      if (!uri || !pid) {
-        return alert('Select a playlist & paste a valid track URL.');
+    // Render the playlist
+    function render() {
+      cont.innerHTML = '';
+      playlist.forEach((src, i) => {
+        const div = document.createElement('div');
+        div.className = 'track';
+        // remove button
+        const rm = document.createElement('button');
+        rm.className = 'remove';
+        rm.textContent = '✖';
+        rm.onclick = () => {
+          playlist.splice(i,1);
+          saveAndRender();
+        };
+        // embed
+        const ifr = document.createElement('iframe');
+        ifr.src = src;
+        ifr.allow = 'encrypted-media; autoplay';
+        div.append(rm, ifr);
+        cont.append(div);
+      });
+    }
+
+    // Save to localStorage + re-render
+    function saveAndRender() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(playlist));
+      render();
+    }
+
+    // Add button handler
+    btn.addEventListener('click', () => {
+      const url = inp.value.trim();
+      const src = makeEmbedSrc(url);
+      if (!src) {
+        return alert('Please paste a Spotify track.');
       }
-      fetch(`https://api.spotify.com/v1/playlists/${pid}/tracks`, {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + token,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ uris: [uri] })
-      })
-      .then(r => {
-        if (r.ok) {
-          inpTrack.value = '';
-          renderPlaylist();
-        } else {
-          return r.json().then(e => { throw new Error(e.error.message); });
-        }
-      })
-      .catch(err => alert(err.message));
-    }
+      playlist.push(src);
+      inp.value = '';
+      saveAndRender();
+    });
 
-    // ─── RENDER EMBEDDED TRACKS ───
-    function renderPlaylist() {
-      const pid = selPlaylist.value;
-      if (!pid) { container.innerHTML = ''; return; }
-      fetch(`https://api.spotify.com/v1/playlists/${pid}/tracks?limit=20`, {
-        headers: { 'Authorization': 'Bearer ' + token }
-      })
-      .then(r => r.json())
-      .then(data => {
-        container.innerHTML = '';
-        data.items.forEach(item => {
-          const tid = item.track.id;
-          const uri = item.track.uri;
-          const div = document.createElement('div');
-          div.className = 'track';
-
-          // remove button
-          const rm = document.createElement('button');
-          rm.className = 'remove';
-          rm.textContent = '✖';
-          rm.onclick = () => removeTrack(pid, uri);
-
-          // embed
-          const iframe = document.createElement('iframe');
-          iframe.src   = `https://open.spotify.com/embed/track/${tid}`;
-          iframe.allow = 'encrypted-media; autoplay';
-
-          div.append(rm, iframe);
-          container.append(div);
-        });
-      });
-    }
-
-    // ─── REMOVE TRACK from SPOTIFY ───
-    function removeTrack(pid, uri) {
-      fetch(`https://api.spotify.com/v1/playlists/${pid}/tracks`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': 'Bearer ' + token,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ tracks: [{ uri }] })
-      })
-      .then(r => {
-        if (r.ok) renderPlaylist();
-        else r.json().then(e => alert(e.error.message));
-      });
-    }
-
+    // Initial render
+    render();
   })();
   </script>
+
 </body>
 </html>
