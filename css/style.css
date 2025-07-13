@@ -1,0 +1,189 @@
+/* ——— Global Colors & Reset ——— */
+:root {
+  --bg: #fbfbf3;
+  --brand: #a8132b;
+  --white: #ffffff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  background: var(--bg);
+  color: var(--brand);
+  font-family: 'Georgia', serif;
+  line-height: 1.6;
+}
+
+/* ——— NAVBAR ——— */
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 3rem;        /* ↑ more padding top/bottom & left/right */
+}
+nav .logo a {
+  text-decoration: none;
+  color: var(--brand);
+  font-size: 2rem;            /* ↑ larger logo text */
+  font-weight: bold;
+  font-style: normal;
+}
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;                  /* ↑ more space between links */
+}
+nav a {
+  text-decoration: none;
+  color: var(--brand);
+  font-style: italic;
+  font-size: 1.125rem;         /* ↑ larger nav links */
+}
+nav a:hover {
+  text-decoration: underline;
+}
+nav .surprise {
+  background: var(--brand);
+  color: var(--white);
+  padding: 0.8rem 1.6rem;      /* ↑ a bit bigger button */
+  border-radius: 50px;
+  font-style: normal;
+  font-size: 1.125rem;         /* ↑ match link size */
+}
+
+/* ensure hero can contain an absolutely positioned image */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 13.5rem 2rem;       /* same “green box” spacing as before */
+  background-color: var(--bg);
+  text-align: center;
+}
+
+/* layer the content above the image */
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* position & size your <img> behind the text */
+.hero-img {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 4rem); /* full width minus your horizontal padding */
+  max-width: 1200px;         /* never get crazily huge on wide screens */
+  height: auto;
+  z-index: 0;
+  opacity: 0.6;              /* tone it down so text pops—adjust as you like */
+  pointer-events: none;      /* clicks go straight to your button/text */
+}
+
+
+/* ——— MAIN CONTENT WRAPPER ——— */
+main {
+  padding: 4rem 2rem;
+  max-width: 800px;
+  margin: auto;
+}
+
+/* ——— Bigger logo “Martin & Isa” and remove its underline on hover ——— */
+nav .logo a {
+  font-size: 2.5rem;       /* ↑ bump from 2rem to 2.5rem (or whatever feels right) */
+  text-decoration: none;   /* ensure no underline by default */
+}
+nav .logo a:hover {
+  text-decoration: none;   /* explicitly prevent underline on hover */
+}
+
+/* ——— Even larger hero title ——— */
+.hero h1 {
+  font-size: 6rem;         /* ↑ bump from 6rem to 7rem (adjust to taste) */
+}
+/* ——— BUTTON STYLING ——— */
+.hero-content .btn {
+  background: var(--brand);
+  color: var(--white);
+  padding: 0.5rem 2.5rem;      /* same size as before */
+  border-radius: 50px;
+  text-decoration: none;     /* remove underline */
+  font-size: 1.125rem;
+  display: inline-block;
+}
+
+.hero-content .btn:hover {
+  opacity: 0.9;
+}
+
+/* ——— 500 Things Page Styles ——— */
+.things-page {
+  padding: 4rem 2rem;
+  max-width: 1000px;
+  margin: auto;
+  text-align: center;
+}
+
+.things-page h2 {
+  font-size: 3rem;
+  margin-bottom: 2rem;
+}
+
+/* container for the long list */
+.things-container {
+  background: var(--white);
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* split into columns for readability */
+.things-container ol {
+  column-count: 2;
+  column-gap: 3rem;
+  list-style-position: inside;
+}
+
+/* individual items styling */
+.things-container li {
+  margin-bottom: 0.75rem;
+  break-inside: avoid;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* smaller columns on narrow screens */
+@media (max-width: 768px) {
+  .things-container ol {
+    column-count: 1;
+  }
+}
+
+/* make the wrapper positioned so our thumb can sit on top */
+#progress-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+/* the little circle that follows your drag */
+#progress-handle {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;        /* adjust size if you like */
+  height: 12px;
+  background: var(--brand);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  pointer-events: none;
+  display: none;      /* show only while dragging */
+  z-index: 5;
+}
+:root {
+  --bg: #fbfbf3;
+  --brand: #a8132b;
+  --white: #fff;
+}

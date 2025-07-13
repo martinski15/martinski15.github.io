@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>February 2025 – Our Story</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: Georgia, serif;
+      background: #fbfbf3;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    .story-box {
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 90vw;
+      max-width: 900px;
+      padding: 2.5rem 2rem;
+      margin-bottom: 2rem;
+    }
+    .story-box h1 {
+      margin: 0 0 1.5rem;
+      font-size: 2.75rem;
+      color: #a8132b;
+      text-align: center;
+    }
+    .story-box p {
+      margin: 1rem 0;
+      line-height: 1.5;
+      font-size: 1.2rem;
+      text-align: justify;
+    }
+    .story-box ul.plan-list {
+      text-align: left;
+      margin: 1.5rem 0 2rem 1.5rem;
+      font-size: 1.2rem;
+      list-style: disc;
+    }
+    .story-box ul.plan-list li {
+      margin-bottom: 0.75rem;
+    }
+
+
+
+/* 1) Make the carousel wrapper match the image width so arrows hug the edges */
+.carousel {
+  width: 70% !important;
+  max-width: 400px !important;
+  margin: 2rem auto !important;
+}
+
+.carousel img {
+  display: block;                 /* ensure centering works */
+  width: 70% !important;          /* 60% of the carousel container */
+  max-width: 400px !important;    /* never exceed 400px */
+  margin: 1.5rem auto !important; /* center + vertical breathing room */
+}
+
+/* 2) Style arrows as circles and center their icon */
+.carousel .arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  border: 2px solid #a8132b;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  line-height: 2.5rem;   /* vertically center the arrow glyph */
+  text-align: center;
+  color: #a8132b;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+  padding: 0;
+}
+
+/* 3) Hover flips colors */
+.carousel .arrow:hover {
+  background: #a8132b;
+  color: #fff;
+}
+
+/* 4) Nudge circles right up against the image */
+.carousel .prev { left: -1.25rem; }
+.carousel .next { right: -1.25rem; }
+
+/* ensure arrows can sit on top of the image */
+.carousel {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+/* shrink the image, but leave the wrapper at 70% */
+.carousel img {
+  width: 70% !important;
+  max-width: 400px !important;
+  display: block;
+  margin: 1.5rem auto !important;
+}
+
+/* make sure arrows sit above everything */
+.carousel .arrow {
+  z-index: 10 !important;
+}
+
+
+
+    .nav-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .nav-buttons a {
+      background: #a8132b;
+      color: #fff;
+      text-decoration: none;
+      padding: .75rem 1.5rem;
+      border-radius: .5rem;
+      font-size: 1rem;
+      transition: background .2s;
+    }
+    .nav-buttons a:hover {
+      background: #900f28;
+    }
+
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo"><a href="index.html">Martin &amp; Isa ♥️</a></div>
+    <ul>
+      <li><a href="our-story.html">Our Story</a></li>
+      <li><a href="watchlist.html">Movie Watchlist</a></li>
+      <li><a href="letters.html">Letters</a></li>
+      <li><a href="500-things.html">500 Things</a></li>
+      <li><a href="bucket-list.html">Bucket List</a></li>
+      <li>
+        <a href="https://martinski15.github.io/2048-personalized/" target="_blank" rel="noopener">2048</a>
+      </li>
+      <li><a href="surprise.html" class="surprise">Surprise 🤍</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="story-box">
+      <h1>February 2025</h1>
+      <p>
+    That next London trip, from January 30th to February 5th, became one of the most profound experiences of my life. After a night out, we spent 36 (yes 36) hours in bed. It was during this perfect, intimate bubble that Isa took my flower away from me. Waiting so long for this moment with someone I loved deeply made it perfect. The remaining days were filled with home cooked meals and endless cuddling, making it our most relaxing trip yet. 
+       
+
+      <!-- Carousel -->
+      <div class="carousel">
+        <button class="arrow prev" aria-label="Previous photo">‹</button>
+        <img id="carousel-image" src="images/feb1.png" alt="February 2025 photo">
+        <button class="arrow next" aria-label="Next photo">›</button>
+      </div>
+    </div>
+
+    <div class="nav-buttons">
+      <a href="story-2025-01.html">← Jan 2025</a>
+      <a href="story-2025-03.html">Mar 2025 →</a>
+    </div>
+  </main>
+
+  <script>
+    // Carousel script
+    (function(){
+      const images = [
+        'images/feb1.png',
+        'images/feb2.png',
+        'images/feb3.png',
+        'images/feb4.png',
+        'images/feb5.png',
+        'images/feb6.png',
+        'images/feb7.png',
+        'images/feb8.png',
+        'images/feb9.png',
+        'images/feb10.png',
+        'images/feb11.png',
+        'images/feb12.png'
+
+        
+      ];
+      let idx = 0;
+      const imgEl = document.getElementById('carousel-image');
+      document.querySelector('.carousel .prev').onclick = () => {
+        idx = (idx - 1 + images.length) % images.length;
+        imgEl.src = images[idx];
+      };
+      document.querySelector('.carousel .next').onclick = () => {
+        idx = (idx + 1) % images.length;
+        imgEl.src = images[idx];
+      };
+    })();
+
+ 
+  // existing carousel code…
+  (function(){
+    const images = [ 'images/feb1.png','images/feb2.png','images/feb3.png','images/feb4.png','images/feb5.png','images/feb6.png','images/feb7.png','images/feb8.png','images/feb9.png','images/feb10.png','images/feb11.png','images/feb12.png' ];
+    let idx = 0;
+    const imgEl = document.getElementById('carousel-image');
+    document.querySelector('.carousel .prev').onclick = () => {
+      idx = (idx - 1 + images.length) % images.length;
+      imgEl.src = images[idx];
+    };
+    document.querySelector('.carousel .next').onclick = () => {
+      idx = (idx + 1) % images.length;
+      imgEl.src = images[idx];
+    };
+  })();
+
+  // ←/→ keys also control the carousel
+  window.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowLeft') document.querySelector('.carousel .prev').click();
+    if (e.key === 'ArrowRight') document.querySelector('.carousel .next').click();
+  });
+</script>
+
+  </script>
+
+</body>
+</html>

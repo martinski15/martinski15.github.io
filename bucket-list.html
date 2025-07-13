@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Our Bucket List – Martin &amp; Isa</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    :root {
+      --bg: #fbfbf3;
+      --brand: #a8132b;
+      --white: #fff;
+      --dark: #333;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Georgia, serif;
+      background: var(--bg);
+      color: var(--dark);
+    }
+    nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.5rem 2rem; background: var(--white);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      position: sticky; top: 0; z-index: 10;
+    }
+    nav .logo a {
+      font-size: 2.5rem; color: var(--brand);
+      text-decoration: none; font-weight: bold;
+    }
+    nav ul {
+      list-style: none; display: flex; gap:1.5rem;
+      margin:0; padding:0;
+    }
+    nav ul li a {
+      text-decoration: none;
+      color: var(--brand);
+      font-style: italic;
+      font-size: 1.1rem;
+      transition: opacity .2s;
+    }
+    nav ul li a:hover,
+    nav ul li a.active {
+      opacity: .6;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem 4rem;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.75rem;
+      color: var(--brand);
+      margin-bottom: 1.5rem;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .controls .filter,
+    .controls .add {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .controls label {
+      font-size: 1rem;
+    }
+    .controls input, 
+    .controls select, 
+    .controls button {
+      font-size: 1rem;
+      padding: .5rem .75rem;
+      border: 1px solid #ccc;
+      border-radius: .5rem;
+    }
+    .controls button {
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .controls button:hover {
+      background: #900f28;
+    }
+
+    .bucket-section {
+      margin-bottom: 2.5rem;
+    }
+    .bucket-section h2 {
+      font-size: 1.75rem;
+      color: var(--brand);
+      border-bottom: 2px solid var(--brand);
+      display: inline-block;
+      margin-bottom: .75rem;
+    }
+    .bucket-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .bucket-item {
+      display: flex;
+      align-items: center;
+      background: var(--white);
+      padding: .75rem 1rem;
+      margin-bottom: .5rem;
+      border-radius: .5rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      cursor: pointer;
+    }
+    .bucket-item .checkbox {
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 2px solid var(--brand);
+      border-radius: .25rem;
+      margin-right: .75rem;
+      flex-shrink: 0;
+    }
+    .bucket-item.completed .checkbox {
+      background: var(--brand);
+    }
+    .bucket-item .text {
+      flex: 1;
+      word-break: break-word;
+    }
+    .hidden {
+      display: none !important;
+    }
+    @media (max-width: 600px) {
+      .controls { flex-direction: column; align-items: stretch; }
+      .controls .add { justify-content: space-between; }
+    }
+    /* delete‐button styling */
+.bucket-item .delete-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  color: #888;
+  transition: color .2s;
+}
+.bucket-item .delete-btn:hover {
+  color: #a00;
+}
+
+/* Modal overlay */
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.hidden { display: none; }
+
+/* Modal box */
+.modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 1rem;
+  text-align: center;
+  max-width: 320px;
+  width: 90%;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  font-family: Georgia, serif;
+  color: var(--dark);
+}
+.modal-content h3 {
+  margin-top: 0;
+  color: var(--brand);
+  font-size: 1.75rem;
+}
+.modal-text {
+  margin: 1rem 0;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+#pw-input {
+  width: 100%;
+  padding: .75rem;
+  font-size: 1.25rem;
+  border: 2px solid #ccc;
+  border-radius: .75rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.modal-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+.modal-buttons button {
+  flex: 1;
+  padding: .75rem;
+  font-size: 1rem;
+  border-radius: .5rem;
+  border: none;
+  cursor: pointer;
+}
+#pw-cancel {
+  background: #eee;
+  color: var(--dark);
+}
+#pw-confirm {
+  background: var(--brand);
+  color: #fff;
+}
+#pw-cancel:hover { background: #ddd; }
+#pw-confirm:hover { background: #900f28; }
+
+.modal-error {
+  margin-top: .75rem;
+  color: #a00;
+  font-size: .9rem;
+}
+
+/* ——— Aesthetic curved red selects ——— */
+.controls select {
+  -webkit-appearance: none;  /* remove default arrow */
+  -moz-appearance: none;
+  appearance: none;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 1.25rem;    /* pill shape */
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg fill='%23fff' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 0.75rem) center;
+}
+
+/* on focus, give a subtle glow */
+.controls select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(168,19,43,0.4);
+}
+
+/* if you want the filter label to sit nicely beside it */
+.filter select {
+  min-width: 160px;
+}
+
+/* and similarly style the “add” dropdown */
+.add select {
+  min-width: 160px;
+}
+
+
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">
+      <a href="index.html">Martin &amp; Isa ♥️</a>
+    </div>
+    <ul>
+      <li><a href="our-story.html">Our Story</a></li>
+      <li><a href="watchlist.html">Movie Watchlist</a></li>
+      <li><a href="letters.html">Letters</a></li>
+      <li><a href="500-things.html">500 Things</a></li>
+      <li><a href="bucket-list.html" class="active">Bucket List</a></li>
+      <li>
+        <a href="https://martinski15.github.io/2048-personalized/" target="_blank" rel="noopener">
+          2048
+        </a>
+      </li>
+      <li><a href="surprise.html" class="surprise">Surprise 🤍</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <h1>Our Bucket List</h1>
+
+    <div class="controls">
+      <!-- Filter -->
+      <div class="filter">
+        <label for="category-filter">Filter:</label>
+        <select id="category-filter">
+          <option value="All">All</option>
+        </select>
+      </div>
+
+      <!-- Add new item -->
+      <div class="add">
+        <input type="text" id="new-item-text" placeholder="New bucket list item…" />
+        <select id="new-item-category"></select>
+        <button id="add-button">Add</button>
+      </div>
+    </div>
+
+    <!-- Container for all sections -->
+    <div id="bucket-container"></div>
+
+  <!-- Password‐protected Delete Modal -->
+<div id="pw-modal" class="modal hidden">
+  <div class="modal-content">
+    <h3>Confirm Deletion</h3>
+    <p class="modal-text">Enter your 6-digit code to delete this item:</p>
+    <input type="password" id="pw-input" maxlength="6" placeholder="●●●●●●" />
+    <div class="modal-buttons">
+      <button id="pw-cancel">Cancel</button>
+      <button id="pw-confirm">Delete</button>
+    </div>
+    <p id="pw-error" class="modal-error hidden">Incorrect code.</p>
+  </div>
+</div>
+
+  </main>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const STORAGE_KEY = 'bucketListData';
+  let pendingDelete = null;
+
+
+  // 1) Categories definition
+  const categories = [
+    { id: 'Adventure',  name: '🌋 Adventure' },
+    { id: 'Nature',     name: '🌊 Nature & Exploration' },
+    { id: 'Travel',     name: '🏝️ Travel & Places' },
+    { id: 'Creativity', name: '🎨 Creativity & Artsy' },
+    { id: 'Food',       name: '🍷 Food & Drink Experiences' },
+    { id: 'Wellness',   name: '🕊️ Wellness & Intimacy' },
+    { id: 'Romantic',   name: '❤️ Cute & Romantic' },
+    { id: 'Fun',        name: '🎉 Fun things to do together' },
+    { id: 'Private',    name: '💋 Private but not secret' },
+    { id: 'Milestones', name: '🐾 Life Milestones' },
+  ];
+
+ // Initial items by category
+      const defaultItems = {
+        Adventure: [
+          'Hike a volcano',
+          'Go sandboarding in the desert',
+          'Go ziplining through a jungle',
+          'Go parasailing',
+          'Go canyoning',
+          'Try surfing together',
+          'Explore a cave system',
+          'Go jet skiing',
+          'Try paddleboarding at sunset',
+          'Complete a high ropes course',
+          'Walk on a glacier',
+          'Swim in a hidden lagoon',
+          'Hike to a hidden beach',
+          'Go whale watching',
+          'Do a survival camping weekend',
+          'Sleep in a hammock under the stars',
+          'Go skydiving',
+          'Go bungee jumping',
+          'Climb a mountain',
+          'Go axe throwing',
+          'Run a 5k',
+          'Camp under the stars',
+          'Go skinny dipping',
+          'Go whitewater rafting',
+          'Swim with sharks',
+          'Go horseback riding in los Andes',
+          'Hike in a national park',
+          'Go skiing',
+          'Go sailing',
+          'Go scuba diving',
+          'Ride e-bikes together',
+          'Go dog sledding',
+          'Ride camels',
+          'Go glamping',
+          'Go rock climbing',
+          'Hike el Nevado de Toluca together',
+          'Hike the dolomites'
+        ],
+        Nature: [
+          'Visit an ice hotel',
+          'Explore un cenote',
+          'Take a hot springs bath',
+          'Kiss under a waterfall',
+          "Swim with Orca's",
+          'Stargaze with a telescope',
+          'See the Northern Lights',
+          'Float in the Dead Sea',
+          'Plant a tree'
+        ],
+        Travel: [
+          "Spend New Year’s Eve in a new country together",
+          'Sleep in a glass igloo in Finland',
+          'Take a luxury train',
+          'Visit a lavender field in Provence',
+          'Rent a convertible and drive the Amalfi Coast',
+          'Go temple-hopping in Southeast Asia',
+          'See the cherry blossoms in Japan',
+          'Ride in a tuk-tuk',
+          'Take a road trip',
+          'Take a spontaneous trip',
+          'Visit every wonder of the world',
+          'Live in a foreign country',
+          'Visit at least 30 different countries together',
+          'Visit all seven continents',
+          'Sleep in an overwater bungalow',
+          'Stay in a castle',
+          'Hike Machu Picchu',
+          'See the Pyramids of Giza',
+          'Go to Paris together',
+          'Fly first class'
+        ],
+        Creativity: [
+          'Try pottery-making together',
+          'Build a piece of furniture together',
+          'Make a custom candle',
+          'Create a vision board together',
+          'Build a LEGO as a couple',
+          'Design matching t-shirts',
+          'DIY a fort with blankets and fairy lights',
+          'Make pasta from scratch',
+          'Create a recipe together',
+          'Take a cooking class',
+          'Take an art class',
+          'Make our own wine or beer',
+          'Invent our own board game',
+          'Paint portraits of each other'
+        ],
+        Food: [
+          'Eat at a Michelin-star restaurant',
+          'Cook a 3-course dinner together',
+          'Go on pub crawl',
+          'Bake a crazy cake with weird ingredients',
+          'Try a chocolate-making workshop',
+          'Take a barista class',
+          'Go to a speakeasy',
+          'Host a blindfolded food tasting challenge',
+          'Take a cocktail-making class',
+          'Enjoy breakfast in bed',
+          'Host a dinner party'
+        ],
+        Wellness: [
+          'Do a sound bath or crystal healing',
+          'Do a guided astrology reading as a couple',
+          'Try floating therapy',
+          'Do a couples massage',
+          'Have a phone-free trip',
+          'Visit un chaman'
+        ],
+        Romantic: [
+          'Have a photoshoot',
+          'Watch a movie in an outdoor cinema',
+          'Recreate your first date',
+          'Have a sunset picnic',
+          'Watch the sunrise together',
+          'Create a playlist together',
+          'Read a book together',
+          'Take professional photos together',
+          'Spend 24 hours in bed',
+          '24 hour Pookie challenge',
+          'Make a list of 100 kisses in 100 places',
+          'Dance in the rain'
+        ],
+        Fun: [
+          'Explore a haunted house or ghost tour',
+          'Escape room',
+          'Go Karting',
+          'Bowling',
+          'Shoot guns',
+          'Go on a scavenger hunt across your city',
+          'See a comedy show',
+          'Go to a concert together',
+          'Have a game night',
+          'Attend a music festival',
+          'Attend a film festival',
+          'Go to a drive-in movie theater',
+          'See a show on Broadway',
+          'Go to an F1 Grand Prix',
+          'See a Grand Slam tennis tournament'
+        ],
+        Private: [
+          'Have sex in a car',
+          'Have sex in the shower',
+          'Try sex in a body of water (pool, ocean, hot tub)',
+          'Have sex in a public (but safe & semi-private) place',
+          'Join the Mile High Club',
+          'Have sex in every room of the house',
+          'Try sex outdoors (forest, beach, balcony, rooftop)',
+          'Have sex somewhere you might get caught (without actually getting caught)',
+          'Try a simple roleplay',
+          'Write down fantasies and randomly pick one to try',
+          'Try a playful striptease or lap dance',
+          'Create a sexual “Yes, No, Maybe” list',
+          'Try mutual masturbation',
+          'Give each other full-body massages with oils',
+          'Visit a sex shop and pick something for each other',
+          'Try temperature play',
+          'Try different positions from the Kama Sutra',
+          'Create a “no hands” challenge',
+          'Let Martin be a vampire'
+        ],
+        Milestones: [
+          'Buy a piece of furniture together',
+          'Buy a pet together',
+          'Move in together'
+        ]
+      };
+    
+
+  // 3) Load or initialize from storage
+  let data = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+  if (!data) {
+    data = {
+      items: JSON.parse(JSON.stringify(defaultItems)),
+      completed: categories.reduce((o, c) => { o[c.id] = {}; return o; }, {})
+    };
+    save();
+  }
+
+  // 4) Populate filters & add dropdown
+  const filterSelect = document.getElementById('category-filter');
+  const addSelect    = document.getElementById('new-item-category');
+  filterSelect.innerHTML = '<option value="All">All</option>';
+  addSelect.innerHTML    = '';
+  categories.forEach(cat => {
+    const opt1 = new Option(cat.name, cat.id);
+    filterSelect.add(opt1);
+    const opt2 = new Option(cat.name, cat.id);
+    addSelect.add(opt2);
+  });
+
+  const container = document.getElementById('bucket-container');
+
+  // 5) Save helper
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  // 6) Create a bucket-item <li>
+  function createBucketItem(text, category) {
+    const li = document.createElement('li');
+    li.className = 'bucket-item';
+    li.dataset.category = category;
+    if (data.completed[category][text]) li.classList.add('completed');
+
+    // checkbox
+    const cb = document.createElement('span');
+    cb.className = 'checkbox';
+    cb.addEventListener('click', () => {
+      li.classList.toggle('completed');
+      data.completed[category][text] = li.classList.contains('completed');
+      save();
+    });
+
+    // text
+    const span = document.createElement('span');
+    span.className = 'text';
+    span.textContent = text;
+
+    // delete button
+    const del = document.createElement('button');
+    del.className = 'delete-btn';
+    del.innerHTML = '🗑️';
+    del.title = 'Delete';
+
+
+// inside createBucketItem…
+del.addEventListener('click', e => {
+  e.stopPropagation();
+  // store for the modal
+  pendingDelete = { li, text, category };
+  pwInput.value = '';
+  pwError.classList.add('hidden');
+  modal.classList.remove('hidden');
+  pwInput.focus();
+});
+
+
+
+    li.append(cb, span, del);
+    return li;
+  }
+
+  // 7) Render all sections
+  function renderAll() {
+    container.innerHTML = '';
+    categories.forEach(cat => {
+      const section = document.createElement('section');
+      section.className = 'bucket-section';
+      section.dataset.category = cat.id;
+      const h2 = document.createElement('h2');
+      h2.textContent = cat.name;
+      section.appendChild(h2);
+
+      const ul = document.createElement('ul');
+      ul.className = 'bucket-list';
+      data.items[cat.id].forEach(txt => {
+        ul.appendChild(createBucketItem(txt, cat.id));
+      });
+      section.appendChild(ul);
+      container.appendChild(section);
+    });
+  }
+
+  // 8) Initial render
+  renderAll();
+
+  // 9) Filter handler
+  filterSelect.addEventListener('change', () => {
+    const v = filterSelect.value;
+    document.querySelectorAll('.bucket-section').forEach(sec => {
+      sec.classList.toggle('hidden', v !== 'All' && sec.dataset.category !== v);
+    });
+  });
+
+  // 10) Add handler
+  document.getElementById('add-button').addEventListener('click', () => {
+    const text = document.getElementById('new-item-text').value.trim();
+    const cat  = addSelect.value;
+    if (!text) return;
+    // update data + save
+    data.items[cat].push(text);
+    data.completed[cat][text] = false;
+    save();
+    // append to DOM
+    const ul = document.querySelector(`.bucket-section[data-category="${cat}"] .bucket-list`);
+    ul.appendChild(createBucketItem(text, cat));
+    // clear
+    document.getElementById('new-item-text').value = '';
+  });
+
+    // ─── NOW INSERT THE MODAL BUTTON HOOKS ───
+  // Modal elements
+  const modal     = document.getElementById('pw-modal');
+  const pwInput   = document.getElementById('pw-input');
+  const pwError   = document.getElementById('pw-error');
+  const btnCancel = document.getElementById('pw-cancel');
+  const btnOK     = document.getElementById('pw-confirm');
+
+  // Cancel hides modal
+  btnCancel.addEventListener('click', () => {
+    modal.classList.add('hidden');
+    pendingDelete = null;
+  });
+
+  // Confirm deletion
+  btnOK.addEventListener('click', () => {
+    if (pwInput.value === '090724') {
+      const { li, text, category } = pendingDelete;
+      data.items[category] = data.items[category].filter(t => t !== text);
+      delete data.completed[category][text];
+      save();
+      li.remove();
+      modal.classList.add('hidden');
+      pendingDelete = null;
+    } else {
+      pwError.classList.remove('hidden');
+    }
+  });
+
+  // Allow Enter key to confirm
+  pwInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') btnOK.click();
+  });
+  
+});
+
+</script>
+
+</body>
+</html>

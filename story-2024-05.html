@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>May 2024 – Our Story</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: Georgia, serif;
+      background: #fbfbf3;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    .story-box {
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 90vw;
+      max-width: 900px;
+      padding: 2.5rem 2rem;
+      margin-bottom: 2rem;
+    }
+    .story-box h1 {
+      margin: 0 0 1.5rem;
+      font-size: 2.75rem;
+      color: #a8132b;
+      text-align: center;
+    }
+    .story-box p {
+      margin: 1rem 0;
+      line-height: 1.5;
+      font-size: 1.2rem;
+      text-align: justify;
+    }
+    .story-box ul.plan-list {
+      text-align: left;
+      margin: 1.5rem 0 2rem 1.5rem;
+      font-size: 1.2rem;
+      list-style: disc;
+    }
+    .story-box ul.plan-list li {
+      margin-bottom: 0.75rem;
+    }
+
+
+
+/* 1) Make the carousel wrapper match the image width so arrows hug the edges */
+.carousel {
+  width: 70% !important;
+  max-width: 400px !important;
+  margin: 2rem auto !important;
+}
+
+.carousel img {
+  display: block;                 /* ensure centering works */
+  width: 70% !important;          /* 60% of the carousel container */
+  max-width: 400px !important;    /* never exceed 400px */
+  margin: 1.5rem auto !important; /* center + vertical breathing room */
+}
+
+/* 2) Style arrows as circles and center their icon */
+.carousel .arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  border: 2px solid #a8132b;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  line-height: 2.5rem;   /* vertically center the arrow glyph */
+  text-align: center;
+  color: #a8132b;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+  padding: 0;
+}
+
+/* 3) Hover flips colors */
+.carousel .arrow:hover {
+  background: #a8132b;
+  color: #fff;
+}
+
+/* 4) Nudge circles right up against the image */
+.carousel .prev { left: -1.25rem; }
+.carousel .next { right: -1.25rem; }
+
+/* ensure arrows can sit on top of the image */
+.carousel {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+/* shrink the image, but leave the wrapper at 70% */
+.carousel img {
+  width: 70% !important;
+  max-width: 400px !important;
+  display: block;
+  margin: 1.5rem auto !important;
+}
+
+/* make sure arrows sit above everything */
+.carousel .arrow {
+  z-index: 10 !important;
+}
+
+
+
+    .nav-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .nav-buttons a {
+      background: #a8132b;
+      color: #fff;
+      text-decoration: none;
+      padding: .75rem 1.5rem;
+      border-radius: .5rem;
+      font-size: 1rem;
+      transition: background .2s;
+    }
+    .nav-buttons a:hover {
+      background: #900f28;
+    }
+
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo"><a href="index.html">Martin &amp; Isa ♥️</a></div>
+    <ul>
+      <li><a href="our-story.html">Our Story</a></li>
+      <li><a href="watchlist.html">Movie Watchlist</a></li>
+      <li><a href="letters.html">Letters</a></li>
+      <li><a href="500-things.html">500 Things</a></li>
+      <li><a href="bucket-list.html">Bucket List</a></li>
+      <li>
+        <a href="https://martinski15.github.io/2048-personalized/" target="_blank" rel="noopener">2048</a>
+      </li>
+      <li><a href="surprise.html" class="surprise">Surprise 🤍</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="story-box">
+      <h1>May 2024</h1>
+      <p>
+        May 2024 became a turning point when life got in Isa’s way and forced her to change her plans to visit Greece and instead came to Madrid (I like to think it was because of me). Determined to rectify past missteps, I meticulously planned a perfect date. However, upon her arrival, she told me she wanted to see me before our first date. Although nerves surged within me as we met at a rooftop bar, I attempted to charm her con mi chiste del monje, deliberately drawn-out without a punchline. In my eyes the date went great, despite my awkward insistence that she wear my jacket, wrongly convinced she was cold. In her eyes however, she thought I hated her.
+      </p>
+      <p>
+        The following day's official date started with an urgent rush home after an exam, quickly showering, and then heading to pick her up.
+      </p>
+
+      <p>This was the original plan:</p>
+      <ul class="plan-list">
+        <li>Pick her up and go to the supermarket to buy wine.</li>
+        <li>Go to el Retiro, find a good spot to sit (I scouted beforehand).</li>
+        <li>Stay there for a few hours and drink.</li>
+        <li>Go for an early dinner @ Numa Pompiano.</li>
+        <li>Go to speakeasy called “La Movida.”</li>
+      </ul>
+
+      <p>
+        This is what actually happened. We armed ourselves with the cheapest bottle of wine headed to el Retiro to my thoughtfully scouted perfect spot (I couldn’t find it even though I had a screenshot marked with a red X), we spent hours in effortless conversation until dinner at Numa Pompiano beckoned. The problem was, I had never drank wine before and didn’t realise it was a diuretic. The romantic spell was briefly broken by an urgent and embarrassing bathroom incident in the park’s bushes, worsened by an unfortunate slip in the mud, yet Isa graciously pretended ignorance, though she later admitted she saw me slip and fall. Despite this comedic misadventure, dinner was as romantic as ever and what better place to end the night than Liberty. We had our drinks, laughed, kind of danced and ended the night sharing a passionate kiss (this was truly the best kiss I have ever had in my life, it actually altered my brain chemistry), forever debating who initiated it (though deep down, we both know).
+      </p>
+      <p>
+        Each subsequent interaction deepened our connection even further. We had a casual evening with her sister going to a Chinese Communist themed bar, ending the night at a McDonald's, where I told Ana Scottie about the time I saw un duende and accidentally convinced her I was insane. Another day Isa was in Madrid, I invited her over and we cooked carbonara together at my apartment (she did most of it). It quickly turned into a more intimate encounter, how could it not if The Greatest Showman was playing in the background. Unfortunately the nerves got the better of me that night which prompted an impulsive chug of wine and vodka which Isa somehow found endearing rather than alarming.
+      </p>
+
+      <!-- Carousel -->
+      <div class="carousel">
+        <button class="arrow prev" aria-label="Previous photo">‹</button>
+        <img id="carousel-image" src="images/may1.png" alt="May 2024 photo">
+        <button class="arrow next" aria-label="Next photo">›</button>
+      </div>
+    </div>
+
+    <div class="nav-buttons">
+      <a href="our-story.html">← Back</a>
+      <a href="story-2024-06.html">Jun 2024 →</a>
+    </div>
+  </main>
+
+  <script>
+    // Carousel script
+    (function(){
+      const images = [
+        'images/may1.png',
+        'images/may2.png',
+        'images/may3.png',
+        'images/may4.png',
+        'images/may5.png'
+      ];
+      let idx = 0;
+      const imgEl = document.getElementById('carousel-image');
+      document.querySelector('.carousel .prev').onclick = () => {
+        idx = (idx - 1 + images.length) % images.length;
+        imgEl.src = images[idx];
+      };
+      document.querySelector('.carousel .next').onclick = () => {
+        idx = (idx + 1) % images.length;
+        imgEl.src = images[idx];
+      };
+    })();
+
+ 
+  // existing carousel code…
+  (function(){
+    const images = [ 'images/may1.png', 'images/may2.png', 'images/may3.png', 'images/may4.png', 'images/may5.png' ];
+    let idx = 0;
+    const imgEl = document.getElementById('carousel-image');
+    document.querySelector('.carousel .prev').onclick = () => {
+      idx = (idx - 1 + images.length) % images.length;
+      imgEl.src = images[idx];
+    };
+    document.querySelector('.carousel .next').onclick = () => {
+      idx = (idx + 1) % images.length;
+      imgEl.src = images[idx];
+    };
+  })();
+
+  // ←/→ keys also control the carousel
+  window.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowLeft') document.querySelector('.carousel .prev').click();
+    if (e.key === 'ArrowRight') document.querySelector('.carousel .next').click();
+  });
+</script>
+
+  </script>
+
+</body>
+</html>

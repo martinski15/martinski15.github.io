@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>500 Flashcards – Martin &amp; Isa</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --bg: #fbfbf3;
+      --brand: #a8132b;
+      --white: #ffffff;
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      font-family: 'Georgia', serif;
+      color: var(--brand);
+    }
+
+    #progress-wrapper {
+      display: flex;
+      align-items: center;
+      padding: 0 2rem;
+      margin: 1rem 0;
+    }
+    #progress {
+      flex: 1;
+      height: 8px;
+      background: #eee;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-right: 1rem;
+    }
+    #progress > div {
+      height: 100%;
+      background: var(--brand);
+      width: 0%;
+    }
+    #counter {
+      font-size: 1rem;
+      color: var(--brand);
+    }
+    .card-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+    .card {
+      background: var(--white);
+      width: 90vw;
+      max-width: 940px;
+      min-height: 420px;
+      border-radius: 1rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+    }
+    #card-text {
+      font-size: 3rem;
+      line-height: 1.3;
+      color: var(--brand);
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+    }
+    .nav-buttons button {
+      background: var(--brand);
+      color: var(--white);
+      border: none;
+      font-size: 2rem;
+      padding: 1rem 1.8rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+
+    #finish-overlay {
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+    #finish-overlay .message {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 1rem;
+      text-align: center;
+      max-width: 90%;
+    }
+    #finish-overlay .message h3 {
+      margin-bottom: 1rem;
+      color: var(--brand);
+      font-size: 2rem;
+    }
+    #finish-overlay .message button {
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.hidden { display: none; }
+
+.modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 1rem;
+  text-align: center;
+  max-width: 320px;
+  width: 90%;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  font-family: Georgia, serif;
+  color: var(--dark);
+}
+.modal-content h3 {
+  margin-top: 0;
+  color: var(--brand);
+  font-size: 1.75rem;
+}
+.modal-buttons, /* you already have styling for buttons so this will inherit */
+#intro-close {
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  padding: .75rem 1.5rem;
+  border-radius: .5rem;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+#intro-close:hover {
+  background: #900f28;
+}
+
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo"><a href="index.html">Martin &amp; Isa ♥️</a></div>
+    <ul>
+      <li><a href="our-story.html">Our Story</a></li>
+      <li><a href="watchlist.html">Movie Watchlist</a></li>
+      <li><a href="letters.html">Letters</a></li>
+      <li><a href="500-things.html" class="active">500 Things</a></li>
+      <li><a href="bucket-list.html">Bucket List</a></li>
+    <li>
+  <a 
+    href="https://martinski15.github.io/2048-personalized/" 
+    target="_blank" 
+    rel="noopener"
+  >
+    2048
+  </a>
+</li>
+      <li><a id="surprise-btn" href="#" class="surprise">Surprise 🤍</a></li>
+    </ul>
+  </nav>
+
+  <!-- Intro Modal -->
+<div id="intro-modal" class="modal hidden">
+  <div class="modal-content">
+    <h1>500 Reasons Why I Love Isa</h1>
+    <button id="intro-close">Show me ❤️</button>
+  </div>
+</div>
+
+  <div id="progress-wrapper">
+    <div id="progress"><div></div></div>
+    <div id="counter">Card 1 of 500</div>
+  </div>
+
+  <div class="card-container">
+    <div class="card" id="card">
+      <p id="card-text"></p>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button id="prev-btn">❮ Prev</button>
+    <button id="next-btn">Next ❯</button>
+  </div>
+
+  <div id="finish-overlay">
+    <div class="message">
+      <h3>These aren’t all the reasons…</h3>
+      <p>They’re just the first 500. There are a million more reasons why I love you, Isa ❤️</p>
+      <button onclick="location.reload()">Start Again</button>
+    </div>
+  </div>
+
+  <script>
+    // ——— Your 500 reasons here ———
+    const reasons = [
+      "She’s smart as hell",
+      "She always finds a way to make me smile",
+      "She’s full of love",
+      "She’s understanding",
+      "She’s makes me laugh",
+      "She genuinely cares about people",
+      "She has a beautiful soul",
+      "She’s sensitive",
+      "She’s emotionally strong",
+      "She’s mature",
+      "She supports me",
+      "She always believes in me",
+      "She’s creative",
+      "She’s an amazing cook",
+      "She’s a good listener",
+      "Hearing her makes my heart smile",
+      "She’s good with words",
+      "She gives me comfort",
+      "She makes me feel loved",
+      "She challenges me in the best way ever",
+      "She makes mundane moments feel extraordinary",
+      "She makes me want to be better",
+      "She accepts me regardless of my flaws",
+      "She can have the best conversations",
+      "She understands me",
+      "She smells amazing",
+      "Her hugs are the best thing ever",
+      "Her skin",
+      "Her sense of style",
+      "She is so effortlessly beautiful even when she doesn’t try",
+      "Her smile is the best thing ever",
+      "Her eyes make me fall in love every time I look at them",
+      "Her eyes lashes are adorable",
+      "She’s hot",
+      "She’s cute",
+      "She’s the prettiest ever",
+      "She makes any problem seem irrelevant",
+      "She gives the best advice",
+      "She’s naturally talented at everything",
+      "She’s good at everything",
+      "She believes in me even when I don’t",
+      "She supports me always",
+      "She’s thoughtful",
+      "She gives the best food recommendations",
+      "She makes me try new things",
+      "She makes everyday exciting",
+      "Her appreciation for art",
+      "Her elite music taste",
+      "Her love for Maya",
+      "When she sends me random texts to tell me she misses or loves me",
+      "When she laughs",
+      "When she just looks at me",
+      "When she kisses me",
+      "When she holds my hand just because",
+      "She gives the best gifts",
+      "Her singing",
+      "Every single part of her body",
+      "How she lets me kiss all of her",
+      "How she makes me feel",
+      "The way she lays on me",
+      "Sleeping with her",
+      "Our chemistry",
+      "The way she talks about the people she loves",
+      "Her curiosity",
+      "She’s a foodie",
+      "The way she shows me her favorite songs",
+      "How she makes playlists for me",
+      "Her storytelling",
+      "How she enjoys traveling",
+      "She loves me even though I’m weird",
+      "She’s generous",
+      "She’s thoughtful",
+      "The way she cares for animals",
+      "She always stands up for what’s right",
+      "She makes people feel important",
+      "The way she looks out for people",
+      "How she worries about her friends",
+      "She’s protective of the people she loves",
+      "The way she treats strangers with kindness",
+      "She’s a kind person",
+      "She’s always fitted",
+      "She is so good at putting make up on",
+      "Her hair",
+      "Her eyebrows",
+      "Her ears",
+      "Her nose",
+      "Her teeth",
+      "Her eyes",
+      "Her mouth",
+      "Her lips",
+      "Her soft soft soft skin",
+      "Her hands and arms",
+      "Her thighs ahhh",
+      "Her legs",
+      "Her stomach and lying on it",
+      "Her boobs (they are the best thing ever)",
+      "Her vagina is so pretty",
+      "Her ass is perfect",
+      "She has the body of a Greek goddess",
+      "Her passion",
+      "She makes me feel like the luckiest person alive",
+      "Her effort",
+      "How she reassures me",
+      "The way she notices little things about me",
+      "The way she knows me more than anyone in this world",
+      "The way she remembers little things I say",
+      "The way she always wants to make me happy",
+      "She trusts me",
+      "She sees the best in me",
+      "She makes me feel like home",
+      "I love every time she tells me she loves me",
+      "She makes me feel calm just by being in her presence",
+      "Our inside jokes",
+      "The way time flies when I’m with her",
+      "But also the way the world stops when I’m her",
+      "Every single time we’ve visited each other",
+      "Se puso la camiseta de Argentina",
+      "How she shares her life with me",
+      "She chose me",
+      "How boring days don’t exist with her",
+      "How I can picture marrying her",
+      "How she makes me excited to grow old together",
+      "She makes me excited for the future",
+      "The way I trust her with all of my heart",
+      "Her loyalty",
+      "The idea of building a life with her",
+      "The way she showed me what love is",
+      "How she unlocked a feeling in me I had never experienced",
+      "How I feel comfortable around her",
+      "How I can be myself when I’m with her",
+      "How great of a mom she’ll be",
+      "How I know she will always be there for me",
+      "Because I cannot imagine my life without her",
+      "I love her simply because she’s her",
+      "She is my best friend",
+      "She makes every moment meaningful",
+      "The way she radiates positive energy",
+      "She sees the good in people",
+      "Her confidence",
+      "Her independence",
+      "She’s fearless",
+      "She’s strong",
+      "Her dancing",
+      "Her adorable faces she makes",
+      "She never makes me feel alone",
+      "Even though we’re far away I always feel close to her",
+      "The way she makes time for me",
+      "The way she doesn’t think I’m too much",
+      "She sends me memes",
+      "She downloads tiktoks to send me",
+      "She’s ambitious",
+      "The way she changed my life for the better",
+      "She’s the last person I think of when I sleep",
+      "The way I dream about her",
+      "She’s the first person I want to share good news with",
+      "She is the love of my life",
+      "Our face times",
+      "Our zoom calls",
+      "Watching a movie with her",
+      "The way she knows the lyrics of every song on this planet",
+      "Eating with her",
+      "Showering with her",
+      "Having sex with her",
+      "Her excitement when we see each other again",
+      "Our pookie Sundays",
+      "How we talk for hours and hours",
+      "How when we’re together we are together for 150 hours straight and she never grows tired of me",
+      "How she stays up late to talk to me",
+      "When she talks about our future together",
+      "Taking pictures of her",
+      "When she sends me pictures of her",
+      "The album I have of her",
+      "How she motivates me",
+      "Her voice notes",
+      "Her drunk texts",
+      "Her drunk calls",
+      "The way hearing her voice makes everything instantly better",
+      "Her good morning texts",
+      "Her good night texts",
+      "Cuando hace berrinches",
+      "Cuando apapachamos",
+      "How she listens to me rant",
+      "She always makes me feel like she’s right there with me",
+      "She always has my back",
+      "She’s my cheerleader",
+      "She listens to my emotions and tries to understands them",
+      "She makes me feel better when I’m sad",
+      "She doesn’t judge me",
+      "She makes me believe in true love",
+      "She makes me believe in soul mates",
+      "The way I look for our initials in tiktoks made by 9 year olds",
+      "The way I love her",
+      "The way I see her",
+      "I love absolutely every single thing about this girl",
+      "The way she makes me excited to see her",
+      "The way she makes London feel like the best city in the planet",
+      "The way she makes me excited for this chapter of my life with her",
+      "How she’s the first person to ever love me",
+      "The way she never made me feel bad for being nervous about sex",
+      "The way she keeps my secrets",
+      "The way she has made my life 100000000x more exciting",
+      "The way she makes me feel special",
+      "How she’s the only thing I can think of when I’m drunk",
+      "How she sends me voice notes telling me a story",
+      "How I feel part of her life",
+      "How she treats me",
+      "The way she kisses my face",
+      "When she bites my ear",
+      "When she’s down to try new things",
+      "She makes uncomfortable conversations feel natural",
+      "The way she’s a sleepy princess",
+      "The way we sleep in all day",
+      "She made me like sushi",
+      "I don’t know what boring is when I’m with her",
+      "I feel connected to her",
+      "When we are on the escalator and she’s one step above me",
+      "Our dates",
+      "When when do things together",
+      "When we are together in general",
+      "When she’s sassy",
+      "She puts up with me",
+      "She texted me at 00:00 on my birthday",
+      "She responds quickly to me",
+      "The way we’ve talked every single day for a year",
+      "How we’ve only been together for 7 and a half months but she makes it feel like we’ve been together for years (in a good way obvio)",
+      "How she motivates me to work hard just because I want to be with her",
+      "She makes me want to be a better person",
+      "How she’s the only person in this world I could never self sabotage with",
+      "How I know she’ll never give up on me",
+      "How I know she’ll be with me in my worst and best moments alike",
+      "How I know when she makes a promise she’ll keep it",
+      "How much I mean to her",
+      "How she’s genuinely the only girl in this world I see",
+      "The way I know I will marry this girl",
+      "The fact she agreed to 4 kids",
+      "The way I can't wait to live with her",
+      "The way I want to hear her talk forever",
+      "The way she makes me want to know absolutely everything about her",
+      "The way I want to spend the rest of my life with her",
+      "The fact she is the hottest girls in this universe",
+      "The way we are meant for each other",
+      "The fact she is my soulmate",
+      "The fact my family loves her",
+      "The fact that she is the only person in this world who Maya never barked at",
+      "The fact Maya feels comfortable around her",
+      "The fact my sisters love her",
+      "The fact she made me believe in long distance",
+      "She talks to old people",
+      "She attracts people",
+      "She recharges me",
+      "She’s fun to be around",
+      "How we used baby oil",
+      "How she showed me her bloody pad",
+      "The way the word uncomfortable doesn’t exist with her",
+      "The way she smiles at me",
+      "How she gets excited",
+      "Watching movies with her",
+      "How she leans her head on my shoulder",
+      "How she compliments me",
+      "How she’s patient with me",
+      "How she teases me",
+      "Her excitement when she accomplishes something",
+      "How she gets along with everyone she meets",
+      "Her endless energy",
+      "How adorable she is",
+      "How she shows me her camera roll",
+      "Her courage",
+      "The way she looks when she sleeps",
+      "How comforting it feels to hold her",
+      "How she online shops",
+      "Her cute handwriting",
+      "She gave me a postcard",
+      "How she loves learning",
+      "How contagious her optimism is",
+      "When excited she gets for coffee",
+      "Her love for Mexico",
+      "How she made me love coffee",
+      "Her adorable New York accent",
+      "Her accents in general",
+      "She’s warm",
+      "How she genuinely enjoys life",
+      "Her sarcasm",
+      "How she respects me",
+      "How soft her voice is",
+      "When she asks me to tell her what clothes I like when she is looking at what to buy",
+      "How she brings out the best in everyone around her",
+      "How she always has everyones back",
+      "How cute she is when she gets sleepy",
+      "Our car rides together",
+      "How she let’s me drive fast",
+      "When she love bombs me",
+      "Just hearing her breath",
+      "How authentic she is",
+      "Her cute reactions to emotional movies",
+      "Her effortless charm",
+      "How whitty she is",
+      "Her sense of adventure",
+      "How she’s a backpack Ryanair girl",
+      "Her playful competitiveness",
+      "Her presence in general",
+      "How she cheers me up in a second",
+      "How she inspires me in everyday",
+      "How she says hubo",
+      "Y cocodrilo",
+      "Her excitement for christmas",
+      "How she adapts to every and any situation",
+      "How excited and cute she gets when she sees dogs",
+      "How she always sees the glass half full",
+      "The way I know she’ll make a difference in this world",
+      "How she gets shy in cute moments",
+      "When she says “Shut up”",
+      "How she shows me around London",
+      "Her talent for finding amazing places",
+      "How she corrects me when I’m wrong",
+      "Como se banco mi chiste del monje",
+      "Her cute birthday and valentines day stories",
+      "How she smiles when I count down after making her mad",
+      "How easily she makes friends",
+      "The way she carefully picks her outfits",
+      "How self aware she is",
+      "Her banter",
+      "How she sometimes dances when she’s on top of me",
+      "The fact she is usually on top",
+      "How she treats service workers",
+      "How she handles stressful situations",
+      "Her enthusiasm when recommending books or movies",
+      "Her love for museums",
+      "How she makes long distance easy",
+      "How excited she gets when the sun is out",
+      "I have said this before but her LEGS",
+      "How she loves nights in",
+      "How we have stayed in bed for 30 hours straight (many times)",
+      "The way we sleep in together",
+      "The fact I wake up early with her because she is better than any dream I could be having",
+      "When she wears t-shirts",
+      "When she wears nothing",
+      "How kind she is to strangers",
+      "How she never interrupts me",
+      "The way she sometimes spaces out",
+      "Our zoom movie nights",
+      "When we play fight",
+      "The fact she’s sent me pictures of cool cars",
+      "When she sends me a random update of her day",
+      "When we just walk together",
+      "When we watch tiktoks together in bed",
+      "The fact she is more beautiful than any sunset",
+      "When she sends me baby pictures of her",
+      "When she just wraps around me",
+      "When she holds me and doesn’t let go",
+      "The fact she was down to try a vibrator with me",
+      "The fact we try everything",
+      "How she sat on my face",
+      "How she made me believe in spiritual shit",
+      "How I feel safe to share my insecurities with her",
+      "How she gets nervous when she thinks she is yapping too much but in reality I never ever want her to ever stop talking",
+      "How we talk about saying almost one year after our 9 month anniversary",
+      "The fact she is coming to Argentina",
+      "How she takes care of herself",
+      "How we just fit",
+      "How she just makes my heart full",
+      "The way her apartment has many reminders of me",
+      "When she wears my chainnnnn",
+      "How she makes me so so so grateful for having her",
+      "The way we’ve negotiated times for saying I love you more",
+      "How proud I am to be able to call her mine",
+      "How she is the one I have waited for my entire life",
+      "How I am so happy she is my first everything",
+      "The undeniable fact that loving her is my favorite thing in the universe",
+      "How her existence is the best thing that ever happened to me",
+      "How she’s truly irreplaceable",
+      "How she fixed my morning wood (this shit is actually crazy)",
+      "When we get sweet treats",
+      "When she plays with my hair",
+      "How good she is at making bows",
+      "How amazing she is at wrapping gifts",
+      "How taking our socks off before sex is now something funny",
+      "How much joy she brings into my life every single day",
+      "Her love for Mexican food",
+      "How she loves wine",
+      "When she shares her day with me",
+      "When she wears something of mine",
+      "How cute and pretty she looks with messy hair",
+      "When she is not wearing any makeup",
+      "How beautifully expressive her eyes are",
+      "How girly she is",
+      "How badass she is",
+      "How she wishes me luck before any important event in my life",
+      "When she just grabs me",
+      "When we buy things together",
+      "How cute she looks when she is driving",
+      "Her love for her jeepeta",
+      "KISSING HER",
+      "How contagious her laugh is",
+      "When she sends me kisses through zoom",
+      "We she uses filters on zoom",
+      "When she just looks at me",
+      "Como me hace mimitos",
+      "Our deep talks",
+      "Lo letrada que es",
+      "How excited she gets more matching outfits",
+      "The fact my grandma loves her and she hasn’t even met her",
+      "The fact we have heart dolphins necklaces",
+      "She gave her her hair ties",
+      "How I feel when I wear her hair ties",
+      "How we go to parks and just lie down",
+      "Mini golfing with her",
+      "Bowling with her",
+      "Go karting with her",
+      "Going to the cinema with her",
+      "Doing anything in general with her",
+      "Her thoughtfulness when shopping for others",
+      "How good she is at karaoke",
+      "She visits me in Madrid",
+      "How she shares childhood memories with me",
+      "How she traps spiders because she doesn’t want to kill them",
+      "How she makes time for me",
+      "Watching severance with her",
+      "How lovingly patient she is with my flaws",
+      "She is my forever favorite",
+      "The way she puts up with one million photos of Maya",
+      "The way she bought Diego candy within 20 minutes of me asking",
+      "The way she tells me the most interesting gossip",
+      "The way she never made fun of me for giving her a handmade shell necklace within like a month of dating her",
+      "How she doesn’t stop talking even when I run out of things to say",
+      "The fact we read the Kama sutra together",
+      "How I’m her private but not secret",
+      "The way she cleans her apartment before I arrive even though she doesn’t have to",
+      "How I’m her wallpaper",
+      "El hecho que se que mi chiste de la foca le encanta",
+      "How she invited me to her family’s posada",
+      "How when we see each other after a month we just lie down in bed hugging each other",
+      "How we can talk for 12 consecutive hours on the phone and she doesn’t grow tired of me",
+      "Es una mujer que resuelve siempre",
+      "She’s a photographer",
+      "She appreciates me",
+      "How she knows all of my secrets",
+      "How she is the person in this world that knows me the most",
+      "How I can be undoubtedly myself with her",
+      "She believes en mi duende (at least a little but)",
+      "How I went to my first ever concert with her",
+      "How we spend hours talking in the car after spending all day together",
+      "How she let me ride her horse and was patient and taught me",
+      "How I have kissed probably 99% of her whole body",
+      "The fact she lets me use her expensive shampoos",
+      "How she’s taken pictures of flowers I’ve given her",
+      "She drew me",
+      "Her pintrest",
+      "How she skips class to come to Madrid or when I am in London",
+      "How lays on me when we are in the metro",
+      "She never complains",
+      "How my bedsheets are trademarked by her",
+      "How she gifted me a Porsche 911",
+      "How I have over 1,000 pictures of her",
+      "How we have matching ducks in our cars",
+      "How when she left for London she gave me her crocodile keychain and I’ve used it everyday since",
+      "How she gets ready when we are together and she looks so concentrated",
+      "How she has made me change my flights just to stay a bit longer with her",
+      "How she makes life interesting",
+      "How I miss her more than anything in the world",
+      "How we’ve stayed up all night talking even though we know we have to wake up early",
+      "Her video notes",
+      "The fact we have a group chat with one of her friends",
+      "She is apricity",
+      "How she randomly starts singing through text message",
+      "How she does little dances when she’s on top of me",
+      "How she takes pictures of me",
+      "How I see her every time I turn on my phone",
+      "How she lets me know when baddie pics were taken",
+      "How she sends me photos before she posts them on Instagram",
+      "How she tells me all the gossip",
+      "How she hits me with love",
+      "The way we playfully make fun of each other",
+      "They way she brought her huge camera to Madrid even though she just has a backpack",
+      "They way she’s told me about her dreams",
+      "How aesthetic she is",
+      "The way I can be having the worst day ever and she makes it a good day",
+      "Making out with her drunk",
+      "Going out clubbing with her",
+      "The way she bites me way more when she’s drunk (I love it)",
+      "The way she hypes the people around her",
+      "The way she reacts when she eats something she finds yummy",
+      "When her hair is all messy",
+      "They way she controls the music when we’re in the car",
+      "When she sends me cute reels",
+      "When she’s cursi",
+      "How she chooses the best places to eat a sweet treat",
+      "The way she sticks her tongue out when she’s really concentrating",
+      "When she double textsss",
+      "The way she was holding on tight in the escape room",
+      "The way she is not overly jealous",
+      "Her ability to walk in heals like it’s no big deal",
+      "The way she’s always down for dessert",
+      "The way she sends us reels and says “this is us”",
+      "Her nick names for me",
+      "Tinski",
+      "Her amazing storytelling skills",
+      "Her voice when she’s half asleep",
+      "Her emotional intelligence",
+      "Her half sincere threats when I tease her a bit too much",
+      "How Her smile makes me smile"
+    ];
+
+    const cardText  = document.getElementById('card-text');
+    const progress  = document.querySelector('#progress > div');
+    const counter   = document.getElementById('counter');
+    const prevBtn   = document.getElementById('prev-btn');
+    const nextBtn   = document.getElementById('next-btn');
+    const surprise  = document.getElementById('surprise-btn');
+    const finishOv  = document.getElementById('finish-overlay');
+    let current = 0;
+
+    function showCard(idx) {
+      current = Math.max(0, Math.min(reasons.length - 1, idx));
+      cardText.textContent = reasons[current];
+      updateProgress();
+    }
+
+    function nextCard() { showCard(current + 1); }
+    function prevCard() { showCard(current - 1); }
+    function surpriseCard() {
+      const rand = Math.floor(Math.random() * reasons.length);
+      showCard(rand);
+      fireConfetti(200);
+    }
+
+    function updateProgress() {
+      const pct = ((current + 1) / reasons.length) * 100;
+      progress.style.width = pct + '%';
+      counter.textContent = `Card ${current + 1} of ${reasons.length}`;
+      if (current === reasons.length - 1) {
+        finishOv.style.display = 'flex';
+      }
+    }
+
+    function fireConfetti(p = 100) {
+      confetti({ particleCount: p, spread: 60, origin: { y: 0.3 } });
+    }
+
+    prevBtn.onclick     = prevCard;
+    nextBtn.onclick     = nextCard;
+    surprise.onclick    = e => { e.preventDefault(); surpriseCard(); };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      showCard(0);
+    });
+
+    // ←/→ keyboard navigation
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') nextCard();
+  else if (e.key === 'ArrowLeft') prevCard();
+});
+
+// 1) create & append the thumb
+const bar       = document.getElementById('progress');
+const wrapper   = document.getElementById('progress-wrapper');
+const handle    = document.createElement('div');
+handle.id       = 'progress-handle';
+wrapper.appendChild(handle);
+
+// 2) helper to position handle
+function positionHandle(pct) {
+  const r = bar.getBoundingClientRect();
+  // left offset relative to wrapper:
+  const wrapRect = wrapper.getBoundingClientRect();
+  const x = r.left - wrapRect.left + pct * r.width;
+  handle.style.left = `${x}px`;
+}
+
+// 3) update existing jumpToCard & showCard to also move the thumb
+function jumpToCard(e) {
+  const r = bar.getBoundingClientRect();
+  let pct = (e.clientX - r.left) / r.width;
+  pct = Math.min(Math.max(pct, 0), 1);
+  showCard(Math.floor(pct * (reasons.length - 1)));
+  positionHandle(pct);
+}
+
+// override showCard to reposition thumb after each update
+const _oldShow = showCard;
+showCard = idx => {
+  _oldShow(idx);
+  const pct = (current) / (reasons.length - 1);
+  positionHandle(pct);
+};
+
+// 4) show/hide handle on drag
+let dragging = false;
+wrapper.addEventListener('mousedown', () => {
+  dragging = true;
+  handle.style.display = 'block';
+});
+window.addEventListener('mouseup', () => {
+  dragging = false;
+  handle.style.display = 'none';
+});
+window.addEventListener('mousemove', e => {
+  if (dragging) jumpToCard(e);
+});
+
+// (optional) mirror for touch
+wrapper.addEventListener('touchstart', e => {
+  dragging = true;
+  handle.style.display = 'block';
+  jumpToCard(e.touches[0]);
+});
+window.addEventListener('touchend', () => {
+  dragging = false;
+  handle.style.display = 'none';
+});
+window.addEventListener('touchmove', e => {
+  if (dragging) jumpToCard(e.touches[0]);
+});
+
+// Show the intro modal when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+  const introModal = document.getElementById('intro-modal');
+  const introClose = document.getElementById('intro-close');
+
+  // Remove the 'hidden' class so it appears
+  introModal.classList.remove('hidden');
+
+  // Clicking "Got it ❤️" hides it
+  introClose.addEventListener('click', () => {
+    introModal.classList.add('hidden');
+  });
+});
+
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Our Playlist – Martin &amp; Isa</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    :root {
+      --bg: #fbfbf3;
+      --brand: #a8132b;
+      --white: #fff;
+      --dark: #333;
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      font-family: Georgia, serif;
+      color: var(--dark);
+    }
+    /* ─── NAV ─── */
+    nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.5rem 2rem; background: var(--white);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      position: sticky; top: 0; z-index: 10;
+    }
+    nav .logo a {
+      font-size: 2.5rem;
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav ul {
+      display: flex; gap: 1.5rem; list-style: none; margin: 0; padding:0;
+    }
+    nav ul li a {
+      color: var(--brand);
+      text-decoration: none;
+      font-style: italic;
+      font-size: 1.1rem;
+      transition: opacity .2s;
+    }
+    nav ul li a:hover,
+    nav ul li a.active { opacity: .6; }
+
+    /* ─── MAIN ─── */
+    main {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem 4rem;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2.75rem;
+      color: var(--brand);
+      margin-bottom: 1rem;
+    }
+
+    /* ─── CONNECT / CONTROLS ─── */
+    .add-track {
+      display: grid;
+      grid-template-columns: auto auto 1fr auto;
+      gap: .5rem;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .add-track button,
+    .add-track select,
+    .add-track input {
+      font-size: 1rem;
+      padding: .75rem 1rem;
+      border: 2px solid #ccc;
+      border-radius: .75rem;
+      outline: none;
+    }
+    .add-track button {
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .add-track button:hover { background: #900f28; }
+    .add-track select { background: #fff; cursor: pointer; }
+
+    /* ─── PLAYLIST GRID ─── */
+    .playlist {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .track {
+      background: var(--white);
+      padding: 1rem;
+      border-radius: .75rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    .track iframe {
+      width: 100%;
+      height: 80px;
+      border: none;
+      border-radius: .5rem;
+    }
+    .track .remove {
+      position: absolute;
+      top: .5rem; right: .5rem;
+      background: transparent; border: none;
+      font-size: 1.25rem; color: #888; cursor: pointer;
+      transition: color .2s;
+    }
+    .track .remove:hover { color: #a00; }
+
+    @media (min-width: 600px) {
+      .playlist { grid-template-columns: 1fr 1fr; }
+      .track iframe { height: 100px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo"><a href="index.html">Martin &amp; Isa ♥️</a></div>
+    <ul>
+      <li><a href="our-story.html">Our Story</a></li>
+      <li><a href="500-things.html">500 Things</a></li>
+      <li><a href="bucket-list.html">Bucket List</a></li>
+      <li><a href="playlist.html" class="active">Playlist</a></li>
+      <li><a href="surprise.html" class="surprise">Surprise ❤️</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <h1>Our Spotify Playlist</h1>
+
+    <div class="add-track">
+      <!-- 1) Connect / Reconnect -->
+      <button id="connect-btn">Connect Spotify</button>
+      <!-- 2) Choose a playlist -->
+      <select id="playlist-select" disabled>
+        <option>— select playlist —</option>
+      </select>
+      <!-- 3) Paste a track URL -->
+      <input id="track-url" type="text" placeholder="Paste Spotify track URL…" disabled/>
+      <!-- 4) Add to playlist -->
+      <button id="add-btn" disabled>Add to Playlist</button>
+    </div>
+
+    <div id="playlist" class="playlist"></div>
+  </main>
+
+  <script>
+    // ─── CONFIG ───
+    const clientId    = 'afc45fefac944ba18ece815f65224ab2';  
+    const redirectUri = 'http://127.0.0.1:8000/playlist.html';
+    const scopes      = [
+      'playlist-modify-public',
+      'playlist-modify-private',
+      'user-read-email'
+    ].join('%20');
+
+    // ─── UTILS ───
+    function onHash(fn) {
+      if (window.location.hash) fn();
+      window.addEventListener('hashchange', fn);
+    }
+    function parseHash() {
+      return window.location.hash
+        .substring(1)
+        .split('&')
+        .reduce((acc, kv) => {
+          const [k,v] = kv.split('=');
+          acc[k] = decodeURIComponent(v);
+          return acc;
+        }, {});
+    }
+    function authorize() {
+      const url = 'https://accounts.spotify.com/authorize'
+        + '?response_type=token'
+        + '&client_id=' + clientId
+        + '&scope=' + scopes
+        + '&redirect_uri=' + encodeURIComponent(redirectUri)
+        + '&show_dialog=true';
+      window.location = url;
+    }
+
+    // ─── STATE ───
+    let token = sessionStorage.getItem('spotify_token') || null;
+
+    // ─── ELEMENTS ───
+    const btnConnect   = document.getElementById('connect-btn');
+    const selPlaylist  = document.getElementById('playlist-select');
+    const inpTrack     = document.getElementById('track-url');
+    const btnAdd       = document.getElementById('add-btn');
+    const container    = document.getElementById('playlist');
+
+    // ─── HANDLE REDIRECT ───
+    onHash(() => {
+      const hash = parseHash();
+      if (hash.access_token) {
+        token = hash.access_token;
+        sessionStorage.setItem('spotify_token', token);
+        window.location.hash = '';
+        initAfterAuth();
+      }
+    });
+
+    // ─── INITIAL SETUP ───
+    if (token) {
+      initAfterAuth();
+    } else {
+      // must connect
+      btnConnect.disabled = false;
+      btnConnect.onclick = authorize;
+    }
+
+    // ─── AFTER AUTH ───
+    function initAfterAuth() {
+      btnConnect.textContent = 'Connected ✓';
+      btnConnect.disabled   = true;
+
+      // enable controls
+      selPlaylist.disabled = false;
+      inpTrack.disabled    = false;
+      btnAdd.disabled      = false;
+
+      fetchPlaylists();
+      renderPlaylist();
+    }
+
+    // ─── FETCH USER PLAYLISTS ───
+    function fetchPlaylists() {
+      fetch('https://api.spotify.com/v1/me/playlists?limit=50', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+      .then(r => r.json())
+      .then(data => {
+        selPlaylist.innerHTML = '<option>— select playlist —</option>';
+        data.items.forEach(pl => {
+          const opt = new Option(pl.name, pl.id);
+          selPlaylist.add(opt);
+        });
+      });
+    }
+
+    // ─── PARSE SPOTIFY TRACK URI ───
+    function parseSpotifyTrackUrl(url) {
+      try {
+        const u = new URL(url);
+        // /track/{id}
+        const parts = u.pathname.split('/');
+        if (parts[1] === 'track') return 'spotify:track:' + parts[2];
+      } catch(_) {}
+      return null;
+    }
+
+    // ─── ADD TRACK IN SPOTIFY ───
+    btnAdd.addEventListener('click', () => {
+      const uri        = parseSpotifyTrackUrl(inpTrack.value.trim());
+      const playlistId = selPlaylist.value;
+      if (!uri || !playlistId) {
+        return alert('Choose a playlist and paste a valid track URL.');
+      }
+      fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ uris: [uri] })
+      })
+      .then(r => r.ok
+        ? (alert('Added to Spotify!'), renderPlaylist())
+        : r.json().then(e => alert(e.error.message))
+      );
+    });
+
+    // ─── RENDER EMBEDDED PLAYER LIST ───
+    function renderPlaylist() {
+      // if no playlist chosen, skip
+      const pid = selPlaylist.value;
+      if (!pid) { container.innerHTML = ''; return; }
+
+      // get first 20 tracks
+      fetch(`https://api.spotify.com/v1/playlists/${pid}/tracks?limit=20`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+      .then(r => r.json())
+      .then(data => {
+        container.innerHTML = '';
+        data.items.forEach(item => {
+          const tid = item.track.id;
+          const div = document.createElement('div');
+          div.className = 'track';
+
+          // remove-local copy (optional)
+          const rm = document.createElement('button');
+          rm.className = 'remove';
+          rm.textContent = '✖';
+          rm.onclick = () => alert('Remove via Spotify web or refresh');
+
+          // embed player
+          const iframe = document.createElement('iframe');
+          iframe.src = `https://open.spotify.com/embed/track/${tid}`;
+          iframe.allow = 'encrypted-media; autoplay';
+
+          div.append(rm, iframe);
+          container.append(div);
+        });
+      });
+    }
+
+    // refresh embeds when user selects a different playlist
+    selPlaylist.addEventListener('change', renderPlaylist);
+  </script>
+</body>
+</html>
