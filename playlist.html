@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Our Playlist ♥️ – Martin &amp; Isa</title>
   <link rel="stylesheet" href="css/style.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     /* match your site’s look */
     body { background:#fbfbf3; font-family:Georgia, serif; margin:0 }
@@ -56,80 +59,78 @@
   </main>
 
   <script>
-  (() => {
-    const STORAGE_KEY = 'localPlaylist';
-    let playlist = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    // ─── 2) Initialize Supabase ──────────────────────────────
+    const SUPABASE_URL = 'https://clwmpfzqaizzqvtgtuxb.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNsd21wZnpxYWl6enRndXhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NDQ4MDYsImV4cCI6MjA2ODAyMDgwNn0.kgGLm4j6TUqbEPNFy3HoVNXtRmHwk6sBCy05hTKhBxU';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Elements
-    const inp    = document.getElementById('track-url');
-    const btn    = document.getElementById('add-btn');
-    const cont   = document.getElementById('playlist');
+    // DOM refs
+    const inp   = document.getElementById('track-url');
+    const btn   = document.getElementById('add-btn');
+    const cont  = document.getElementById('playlist');
 
-    // Helpers: extract Spotify or YouTube embed URLs
-    function makeEmbedSrc(url) {
-      try {
-        const u = new URL(url);
-        // Spotify track: https://open.spotify.com/track/{id}
-        if (u.host.includes('spotify.com') && u.pathname.startsWith('/track/')) {
-          const id = u.pathname.split('/')[2];
-          return 'https://open.spotify.com/embed/track/' + id;
-        }
-        // YouTube: youtu.be/{id} or youtube.com/watch?v={id}
-        if (u.host.includes('youtu.be') || u.host.includes('youtube.com')) {
-          let id = u.host.includes('youtu.be')
-                   ? u.pathname.slice(1)
-                   : new URLSearchParams(u.search).get('v');
-          return 'https://www.youtube.com/embed/' + id;
-        }
-      } catch(e){}
-      return null;
-    }
+    // ─── 3) Fetch & render ───────────────────────────────────
+    async function fetchAndRender() {
+      const { data, error } = await supabase
+        .from('tracks')
+        .select('id, src')
+        .order('inserted_at', { ascending: true });
+      if (error) return console.error(error);
 
-    // Render the playlist
-    function render() {
       cont.innerHTML = '';
-      playlist.forEach((src, i) => {
+      data.forEach(({ id, src }) => {
         const div = document.createElement('div');
         div.className = 'track';
+
         // remove button
         const rm = document.createElement('button');
         rm.className = 'remove';
         rm.textContent = '✖';
-        rm.onclick = () => {
-          playlist.splice(i,1);
-          saveAndRender();
-        };
-        // embed
-        const ifr = document.createElement('iframe');
-        ifr.src = src;
-        ifr.allow = 'encrypted-media; autoplay';
-        div.append(rm, ifr);
+        rm.onclick = () => removeTrack(id);
+
+        // embedded player
+        const iframe = document.createElement('iframe');
+        iframe.src   = src;
+        iframe.allow = 'encrypted-media; autoplay';
+
+        div.append(rm, iframe);
         cont.append(div);
       });
     }
 
-    // Save to localStorage + re-render
-    function saveAndRender() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(playlist));
-      render();
-    }
-
-    // Add button handler
-    btn.addEventListener('click', () => {
+    // ─── 4) Add new track ────────────────────────────────────
+    btn.addEventListener('click', async () => {
       const url = inp.value.trim();
-      const src = makeEmbedSrc(url);
-      if (!src) {
-        return alert('Please paste a Spotify track.');
+      let src = null;
+      // detect Spotify
+      let m = url.match(/\/track\/([A-Za-z0-9]+)/);
+      if (m) src = `https://open.spotify.com/embed/track/${m[1]}`;
+      // detect YT
+      else if ((m = url.match(/(?:youtu\.be\/|v=)([A-Za-z0-9_-]+)/))) {
+        src = `https://www.youtube.com/embed/${m[1]}`;
       }
-      playlist.push(src);
+      if (!src) return alert('Please paste a valid Spotify track URL.');
+      await supabase.from('tracks').insert({ src });
       inp.value = '';
-      saveAndRender();
+      fetchAndRender();
     });
 
-    // Initial render
-    render();
-  })();
-  </script>
+    // ─── 5) Remove track ─────────────────────────────────────
+    async function removeTrack(id) {
+      await supabase.from('tracks').delete().eq('id', id);
+      fetchAndRender();
+    }
 
+    // ─── 6) Live updates ─────────────────────────────────────
+    supabase
+      .channel('public:tracks')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'tracks' },
+        () => fetchAndRender()
+      )
+      .subscribe();
+
+    // ─── 7) Init on page load ────────────────────────────────
+    document.addEventListener('DOMContentLoaded', fetchAndRender);
+  </script>
 </body>
 </html>
