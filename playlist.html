@@ -12,6 +12,7 @@
       --white: #fff;
       --dark: #333;
     }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       background: var(--bg);
@@ -54,7 +55,7 @@
     h1 {
       font-size: 2.75rem;
       color: var(--brand);
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
 
     /* ─── CONNECT / CONTROLS ─── */
@@ -70,19 +71,29 @@
     .add-track input {
       font-size: 1rem;
       padding: .75rem 1rem;
-      border: 2px solid #ccc;
+      border: 2px solid var(--brand);
       border-radius: .75rem;
       outline: none;
     }
     .add-track button {
       background: var(--brand);
-      color: #fff;
+      color: var(--white);
       border: none;
       cursor: pointer;
       transition: background .2s;
     }
     .add-track button:hover { background: #900f28; }
-    .add-track select { background: #fff; cursor: pointer; }
+    .add-track select {
+      background: var(--brand);
+      color: var(--white);
+      cursor: pointer;
+    }
+    .add-track select:disabled,
+    .add-track input:disabled,
+    .add-track button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
 
     /* ─── PLAYLIST GRID ─── */
     .playlist {
@@ -124,7 +135,7 @@
     <div class="logo"><a href="index.html">Martin &amp; Isa ♥️</a></div>
     <ul>
       <li><a href="our-story.html">Our Story</a></li>
-      <li><a href="playlist.html" class="active">Playlist</a></li>
+      <li><a href="playlist.html" class="active">Our Playlist</a></li>
       <li><a href="500-things.html">500 Things</a></li>
       <li><a href="bucket-list.html">Bucket List</a></li>
       <li><a href="surprise.html" class="surprise">Surprise ❤️</a></li>
@@ -135,15 +146,11 @@
     <h1>Our Spotify Playlist</h1>
 
     <div class="add-track">
-      <!-- 1) Connect / Reconnect -->
       <button id="connect-btn">Connect Spotify</button>
-      <!-- 2) Choose a playlist -->
       <select id="playlist-select" disabled>
         <option>— select playlist —</option>
       </select>
-      <!-- 3) Paste a track URL -->
       <input id="track-url" type="text" placeholder="Paste Spotify track URL…" disabled/>
-      <!-- 4) Add to playlist -->
       <button id="add-btn" disabled>Add to Playlist</button>
     </div>
 
@@ -151,8 +158,9 @@
   </main>
 
   <script>
+  (function(){
     // ─── CONFIG ───
-    const clientId    = 'afc45fefac944ba18ece815f65224ab2';  
+    const clientId    = 'afc45fefac944ba18ece815f65224ab2';
     const redirectUri = 'https://tinskisa.com/playlist.html';
     const scopes      = [
       'playlist-modify-public',
@@ -160,14 +168,16 @@
       'user-read-email'
     ].join('%20');
 
-    // ─── UTILS ───
-    function onHash(fn) {
-      if (window.location.hash) fn();
-      window.addEventListener('hashchange', fn);
-    }
+    // ─── ELEMENTS ───
+    const btnConnect  = document.getElementById('connect-btn');
+    const selPlaylist = document.getElementById('playlist-select');
+    const inpTrack    = document.getElementById('track-url');
+    const btnAdd      = document.getElementById('add-btn');
+    const container   = document.getElementById('playlist');
+
+    // ─── AUTH HELPERS ───
     function parseHash() {
-      return window.location.hash
-        .substring(1)
+      return window.location.hash.substring(1)
         .split('&')
         .reduce((acc, kv) => {
           const [k,v] = kv.split('=');
@@ -188,45 +198,34 @@
     // ─── STATE ───
     let token = sessionStorage.getItem('spotify_token') || null;
 
-    // ─── ELEMENTS ───
-    const btnConnect   = document.getElementById('connect-btn');
-    const selPlaylist  = document.getElementById('playlist-select');
-    const inpTrack     = document.getElementById('track-url');
-    const btnAdd       = document.getElementById('add-btn');
-    const container    = document.getElementById('playlist');
-
     // ─── HANDLE REDIRECT ───
-    onHash(() => {
-      const hash = parseHash();
-      if (hash.access_token) {
-        token = hash.access_token;
+    if (!token && window.location.hash) {
+      const h = parseHash();
+      if (h.access_token) {
+        token = h.access_token;
         sessionStorage.setItem('spotify_token', token);
         window.location.hash = '';
-        initAfterAuth();
       }
-    });
-
-    // ─── INITIAL SETUP ───
-    if (token) {
-      initAfterAuth();
-    } else {
-      // must connect
-      btnConnect.disabled = false;
-      btnConnect.onclick = authorize;
     }
 
-    // ─── AFTER AUTH ───
-    function initAfterAuth() {
+    // ─── INIT ───
+    if (token) {
+      afterAuth();
+    } else {
+      btnConnect.disabled = false;
+      btnConnect.onclick  = authorize;
+    }
+
+    function afterAuth() {
       btnConnect.textContent = 'Connected ✓';
       btnConnect.disabled   = true;
-
-      // enable controls
-      selPlaylist.disabled = false;
-      inpTrack.disabled    = false;
-      btnAdd.disabled      = false;
+      selPlaylist.disabled  = false;
+      inpTrack.disabled     = false;
+      btnAdd.disabled       = false;
 
       fetchPlaylists();
-      renderPlaylist();
+      selPlaylist.addEventListener('change', renderPlaylist);
+      btnAdd   .addEventListener('click', addTrack);
     }
 
     // ─── FETCH USER PLAYLISTS ───
@@ -244,25 +243,24 @@
       });
     }
 
-    // ─── PARSE SPOTIFY TRACK URI ───
+    // ─── PARSE TRACK URL ───
     function parseSpotifyTrackUrl(url) {
       try {
-        const u = new URL(url);
-        // /track/{id}
+        const u = new URL(url.trim());
         const parts = u.pathname.split('/');
         if (parts[1] === 'track') return 'spotify:track:' + parts[2];
       } catch(_) {}
       return null;
     }
 
-    // ─── ADD TRACK IN SPOTIFY ───
-    btnAdd.addEventListener('click', () => {
-      const uri        = parseSpotifyTrackUrl(inpTrack.value.trim());
-      const playlistId = selPlaylist.value;
-      if (!uri || !playlistId) {
-        return alert('Choose a playlist and paste a valid track URL.');
+    // ─── ADD TRACK to SPOTIFY ───
+    function addTrack() {
+      const uri = parseSpotifyTrackUrl(inpTrack.value);
+      const pid = selPlaylist.value;
+      if (!uri || !pid) {
+        return alert('Select a playlist & paste a valid track URL.');
       }
-      fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+      fetch(`https://api.spotify.com/v1/playlists/${pid}/tracks`, {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer ' + token,
@@ -270,19 +268,21 @@
         },
         body: JSON.stringify({ uris: [uri] })
       })
-      .then(r => r.ok
-        ? (alert('Added to Spotify!'), renderPlaylist())
-        : r.json().then(e => alert(e.error.message))
-      );
-    });
+      .then(r => {
+        if (r.ok) {
+          inpTrack.value = '';
+          renderPlaylist();
+        } else {
+          return r.json().then(e => { throw new Error(e.error.message); });
+        }
+      })
+      .catch(err => alert(err.message));
+    }
 
-    // ─── RENDER EMBEDDED PLAYER LIST ───
+    // ─── RENDER EMBEDDED TRACKS ───
     function renderPlaylist() {
-      // if no playlist chosen, skip
       const pid = selPlaylist.value;
       if (!pid) { container.innerHTML = ''; return; }
-
-      // get first 20 tracks
       fetch(`https://api.spotify.com/v1/playlists/${pid}/tracks?limit=20`, {
         headers: { 'Authorization': 'Bearer ' + token }
       })
@@ -291,18 +291,19 @@
         container.innerHTML = '';
         data.items.forEach(item => {
           const tid = item.track.id;
+          const uri = item.track.uri;
           const div = document.createElement('div');
           div.className = 'track';
 
-          // remove-local copy (optional)
+          // remove button
           const rm = document.createElement('button');
           rm.className = 'remove';
           rm.textContent = '✖';
-          rm.onclick = () => alert('Remove via Spotify web or refresh');
+          rm.onclick = () => removeTrack(pid, uri);
 
-          // embed player
+          // embed
           const iframe = document.createElement('iframe');
-          iframe.src = `https://open.spotify.com/embed/track/${tid}`;
+          iframe.src   = `https://open.spotify.com/embed/track/${tid}`;
           iframe.allow = 'encrypted-media; autoplay';
 
           div.append(rm, iframe);
@@ -311,8 +312,23 @@
       });
     }
 
-    // refresh embeds when user selects a different playlist
-    selPlaylist.addEventListener('change', renderPlaylist);
+    // ─── REMOVE TRACK from SPOTIFY ───
+    function removeTrack(pid, uri) {
+      fetch(`https://api.spotify.com/v1/playlists/${pid}/tracks`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ tracks: [{ uri }] })
+      })
+      .then(r => {
+        if (r.ok) renderPlaylist();
+        else r.json().then(e => alert(e.error.message));
+      });
+    }
+
+  })();
   </script>
 </body>
 </html>
